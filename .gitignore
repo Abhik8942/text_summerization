@@ -1,0 +1,12 @@
+# Ignore Python virtual environment
+/env
+
+# Ignore binary files
+*.exe
+*.dll
+*.lib
+*.so
+*.pyd
+
+# Optional: ignore ffmpeg binaries
+/summarizer_project/ffmpeg-7.1-full_build/
