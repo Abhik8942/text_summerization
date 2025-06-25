@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
+    />
+    <title>Briefly - History</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      /* Base table styles */
+      .table-container {
+        overflow-x: auto;
+        width: 100%;
+        position: relative;
+        border-radius: 0.75rem;
+      }
+      
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+      }
+      
+      th {
+        position: sticky;
+        top: 0;
+        background: #FFFFFF;
+        z-index: 1;
+      }
+      
+      /* Column widths */
+      .type-column { width: 90px; min-width: 90px; }
+      .date-column { width: 120px; min-width: 120px; }
+      .action-column { width: 70px; min-width: 70px; }
+      .content-column { width: calc(45% - 140px); min-width: 280px; }
+      .summary-column { width: calc(45% - 140px); min-width: 280px; }
+      
+      /* Cell styles */
+      .content-cell {
+        max-width: 400px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-right: 12px;
+      }
+      
+      th, td {
+        padding: 8px 12px !important;
+      }
+      
+      /* Filter dropdown styles */
+      .filter-dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      
+      .filter-button {
+        background-color: #F4EFE6;
+        border: none;
+        border-radius: 9999px;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      
+      .filter-button:hover {
+        background-color: #E9DFCE;
+      }
+      
+      .filter-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 4px;
+        background-color: white;
+        border: 1px solid #E9DFCE;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        min-width: 120px;
+        z-index: 50;
+      }
+      
+      .filter-menu.active {
+        display: block;
+      }
+      
+      .filter-item {
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      
+      .filter-item:hover {
+        background-color: #F4EFE6;
+      }
+      
+      .filter-selected {
+        background-color: #F4EFE6;
+      }
+      
+      /* Tooltip styles */
+      .tooltip {
+        position: relative;
+        display: inline-block;
+      }
+      
+      .tooltip:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+      }
+      
+      .tooltip-text {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 8px;
+        background-color: #333;
+        color: white;
+        border-radius: 4px;
+        white-space: normal;
+        max-width: 300px;
+        transition: opacity 0.3s;
+      }
+      
+      /* Table row hover effect */
+      .table-row-hover:hover {
+        background-color: #F4EFE6;
+        transition: background-color 0.2s ease;
+      }
+    </style>
+</head>
+<body>
+  <div class="relative flex size-full min-h-screen flex-col bg-[#FFFFFF]" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
+    <!-- Header -->
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#F4EFE6] px-10 py-3">
+      <div class="flex items-center gap-4 text-[#1C160C]">
+        <div class="size-4">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
+              fill="currentColor"
+            ></path>
+          </svg>
+        </div>
+        <h2 class="text-[#1C160C] text-lg font-bold leading-tight tracking-[-0.015em]">Briefly</h2>
+      </div>
+      <div class="flex flex-1 justify-end gap-8">
+        <div class="flex items-center gap-9">
+          <a class="text-[#1C160C] text-sm font-medium leading-normal transition-all duration-200 hover:text-[#019863] hover:scale-110 transform" href="/">Home</a>
+          <a class="text-[#1C160C] text-sm font-medium leading-normal transition-all duration-200 hover:text-[#019863] hover:scale-110 transform" href="/summarize_text">Summarize Text</a>
+          <a class="text-[#1C160C] text-sm font-medium leading-normal transition-all duration-200 hover:text-[#019863] hover:scale-110 transform" href="/summarize_video">Summarize Video</a>
+          <a class="text-[#1C160C] text-sm font-medium leading-normal transition-all duration-200 hover:text-[#019863] hover:scale-110 transform" href="/summarize_website">Summarize Website</a>
+          <a class="text-[#1C160C] text-sm font-medium leading-normal transition-all duration-200 hover:text-[#019863] hover:scale-110 transform" href="/get_history">History</a>
+          <a class="text-[#1C160C] text-sm font-medium leading-normal transition-all duration-200 hover:text-[#019863] hover:scale-110 transform" href="#" id="logout-link">Logout</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-4 md:px-10 lg:px-20 py-5">
+      <div class="max-w-[1200px] mx-auto">
+        <h1 class="text-[#1C160C] tracking-light text-[32px] font-bold leading-tight px-4 text-left pb-3 pt-6">Summarization History</h1>
+        
+        <!-- Filter Section -->
+        <div class="flex gap-3 p-3 flex-wrap">
+          <div class="filter-dropdown">
+            <button class="filter-button">
+              <span class="filter-text text-sm font-medium">All</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256" fill="currentColor">
+                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+              </svg>
+            </button>
+            <div class="filter-menu">
+              <div class="filter-item filter-selected" data-value="all">All</div>
+              <div class="filter-item" data-value="text">Text</div>
+              <div class="filter-item" data-value="video">Videos</div>
+              <div class="filter-item" data-value="website">Website</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="px-4 py-3">
+          <div class="rounded-xl border border-[#E9DFCE] bg-[#FFFFFF] overflow-hidden">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="text-left text-[#1C160C] text-sm font-medium leading-normal type-column">Type</th>
+                    <th class="text-left text-[#1C160C] text-sm font-medium leading-normal content-column">Original Content</th>
+                    <th class="text-left text-[#1C160C] text-sm font-medium leading-normal summary-column">Summary</th>
+                    <th class="text-left text-[#1C160C] text-sm font-medium leading-normal date-column">Date Created</th>
+                    <th class="text-center text-[#1C160C] text-sm font-medium leading-normal action-column">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="historyBody">
+                  {% for item in history %}
+                  <tr class="border-t border-t-[#E9DFCE] table-row-hover" data-type="{{ item.SummaryType.lower() }}" data-history-id="{{ item.HistoryID }}">
+                    <td class="type-column">
+                      <div class="flex items-center justify-center rounded-full bg-[#F4EFE6] px-2 py-1 text-[#1C160C] text-sm font-medium">
+                        {{ item.SummaryType }}
+                      </div>
+                    </td>
+                    <td class="content-column">
+                      <div class="tooltip">
+                        <div class="content-cell text-[#1C160C] text-sm">
+                          {{ item.OriginalContent[:100] }}...
+                        </div>
+                        <span class="tooltip-text">{{ item.OriginalContent }}</span>
+                      </div>
+                    </td>
+                    <td class="summary-column">
+                      <div class="tooltip">
+                        <div class="content-cell text-[#A18249] text-sm">
+                          {{ item.Summary[:100] }}...
+                        </div>
+                        <span class="tooltip-text">{{ item.Summary }}</span>
+                      </div>
+                    </td>
+                    <td class="text-[#A18249] text-sm date-column">
+                      {{ item.DateCreated }}
+                    </td>
+                    <td class="text-center action-column">
+                      <button onclick="viewHistory(this)" class="view-button text-[#A18249] text-sm font-bold leading-normal tracking-[0.015em] hover:text-[#1C160C]">
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+     <!-- Footer with Modals -->
+     <footer class="flex justify-center mt-auto">
+      <div class="flex max-w-[960px] flex-1 flex-col">
+          <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
+              <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
+                <a class="text-[#A18249] text-base font-normal leading-normal min-w-40" href="#" id="privacyPolicy">Privacy Policy</a>
+                <a class="text-[#A18249] text-base font-normal leading-normal min-w-40" href="#" id="termsOfService">Terms of Service</a>
+                <a class="text-[#A18249] text-base font-normal leading-normal min-w-40" href="#" id="contactUs">Contact Us</a>
+              </div>
+              <p class="text-[#A18249] text-base font-normal leading-normal">&copy; 2024 Briefly. All Rights Reserved.</p>
+          </footer>
+      </div>
+  </footer>
+  </div>
+  <script>
+    function viewHistory(button) {
+      const row = button.closest('tr');
+      const historyId = row.getAttribute('data-history-id');
+      window.location.href = `/view_history/${historyId}`;
+    }
+  
+    $(document).ready(function() {
+      // Dropdown functionality
+      $('.filter-button').click(function(e) {
+        e.stopPropagation();
+        const menu = $(this).siblings('.filter-menu');
+        $('.filter-menu').not(menu).removeClass('active');
+        menu.toggleClass('active');
+      });
+  
+      // Handle filter item selection
+      $('.filter-item').click(function() {
+        const value = $(this).data('value');
+        const buttonText = $(this).text();
+        
+        // Update button text
+        $(this).closest('.filter-dropdown')
+          .find('.filter-text')
+          .text(buttonText);
+        
+        // Update selected state
+        $('.filter-item').removeClass('filter-selected');
+        $(this).addClass('filter-selected');
+        
+        // Filter table
+        const rows = $('tbody tr');
+        rows.each(function() {
+          const row = $(this);
+          if (value === 'all' || row.data('type') === value) {
+            row.show();
+          } else {
+            row.hide();
+          }
+        });
+        
+        // Close dropdown
+        $(this).closest('.filter-menu').removeClass('active');
+      });
+  
+      // Close dropdown when clicking outside
+      $(document).click(function(e) {
+        if (!$(e.target).closest('.filter-dropdown').length) {
+          $('.filter-menu').removeClass('active');
+        }
+      });
+  
+      // Add keyboard accessibility
+      $('.filter-dropdown').on('keydown', function(e) {
+        const menu = $(this).find('.filter-menu');
+        const items = menu.find('.filter-item');
+        const firstItem = items.first();
+        const lastItem = items.last();
+        
+        switch(e.key) {
+          case 'Enter':
+          case ' ':
+            e.preventDefault();
+            menu.toggleClass('active');
+            if (menu.hasClass('active')) {
+              firstItem.focus();
+            }
+            break;
+          case 'Escape':
+            menu.removeClass('active');
+            $(this).find('.filter-button').focus();
+            break;
+          case 'Tab':
+            if (menu.hasClass('active')) {
+              e.preventDefault();
+              if (e.shiftKey) {
+                if (document.activeElement === firstItem[0]) {
+                  lastItem.focus();
+                } else {
+                  $(document.activeElement).prev('.filter-item').focus();
+                }
+              } else {
+                if (document.activeElement === lastItem[0]) {
+                  firstItem.focus();
+                } else {
+                  $(document.activeElement).next('.filter-item').focus();
+                }
+              }
+            }
+            break;
+        }
+      });
+  
+      // Initialize tooltips for truncated content
+      const contentCells = document.querySelectorAll('.content-cell');
+      contentCells.forEach(cell => {
+        const tooltip = cell.closest('.tooltip');
+        if (cell.scrollWidth > cell.clientWidth) {
+          tooltip.style.cursor = 'help';
+        }
+      });
+  
+      // Logout functionality
+      $('#logout-link').click(function(e) {
+        e.preventDefault();
+        $.ajax({
+          url: '/logout',
+          method: 'GET',
+          success: function(response) {
+            if (response.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Logged out successfully!',
+                text: response.message,
+                timer: 1500,
+                showConfirmButton: false
+              }).then(() => {
+                window.location.href = '/';
+              });
+            }
+          }
+        });
+      });
+  
+      // Handle window resize for responsive layout
+      function handleResize() {
+        const table = document.querySelector('table');
+        const container = document.querySelector('.table-container');
+        
+        // Update container width based on viewport
+        const viewportWidth = window.innerWidth;
+        if (viewportWidth < 768) { // mobile
+          container.style.maxWidth = '100%';
+        } else {
+          container.style.maxWidth = '100%';
+        }
+        
+        // Ensure table is at least as wide as container
+        if (table.offsetWidth < container.offsetWidth) {
+          table.style.width = '100%';
+        }
+      }
+      
+      // Initialize resize handler
+      handleResize();
+      window.addEventListener('resize', handleResize);
+  
+      // Improve tooltip positioning
+      const tooltips = document.querySelectorAll('.tooltip');
+      tooltips.forEach(tooltip => {
+        const tooltipText = tooltip.querySelector('.tooltip-text');
+        tooltip.addEventListener('mouseenter', () => {
+          const rect = tooltipText.getBoundingClientRect();
+          if (rect.right > window.innerWidth) {
+            tooltipText.style.left = 'auto';
+            tooltipText.style.right = '0';
+            tooltipText.style.transform = 'none';
+          }
+        });
+      });
+
+      // Privacy Policy Modal
+      $('#privacyPolicy').click(function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Privacy Policy',
+                html: `
+                    <div class="text-left">
+                        <h3 class="font-bold mb-4">Your Privacy Matters</h3>
+                        <p class="mb-3">At Briefly, we take your privacy seriously. This policy outlines how we collect, use, and protect your personal information.</p>
+                        
+                        <h4 class="font-bold mb-2">Data Collection</h4>
+                        <p class="mb-3">We collect only necessary information required to provide our summarization services, including:</p>
+                        <ul class="list-disc pl-5 mb-3">
+                            <li>Account information</li>
+                            <li>Usage data</li>
+                            <li>Content you submit for summarization</li>
+                        </ul>
+                        
+                        <h4 class="font-bold mb-2">Data Usage</h4>
+                        <p class="mb-3">Your data is used solely for:</p>
+                        <ul class="list-disc pl-5 mb-3">
+                            <li>Providing our services</li>
+                            <li>Improving user experience</li>
+                            <li>Account management</li>
+                        </ul>
+                        
+                        <h4 class="font-bold mb-2">Data Protection</h4>
+                        <p class="mb-3">We employ industry-standard security measures to protect your information, including:</p>
+                        <ul class="list-disc pl-5 mb-3">
+                            <li>Encryption of sensitive data</li>
+                            <li>Regular security audits</li>
+                            <li>Secure data storage</li>
+                        </ul>
+                    </div>
+                `,
+                confirmButtonText: 'Close',
+                confirmButtonColor: '#019863',
+                width: '600px',
+                customClass: {
+                    container: 'privacy-modal',
+                    popup: 'swal2-popup-custom',
+                    content: 'text-left'
+                }
+            });
+        });
+
+        // Terms of Service Modal
+        $('#termsOfService').click(function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Terms of Service',
+                html: `
+                    <div class="text-left">
+                        <h3 class="font-bold mb-4">Terms of Use</h3>
+                        <p class="mb-3">By using Briefly, you agree to these terms of service.</p>
+                        
+                        <h4 class="font-bold mb-2">Usage Guidelines</h4>
+                        <ul class="list-disc pl-5 mb-3">
+                            <li>Use the service responsibly and ethically</li>
+                            <li>Respect intellectual property rights</li>
+                            <li>Maintain account security</li>
+                            <li>Do not abuse or misuse the service</li>
+                        </ul>
+                        
+                        <h4 class="font-bold mb-2">Service Limitations</h4>
+                        <p class="mb-3">We reserve the right to:</p>
+                        <ul class="list-disc pl-5 mb-3">
+                            <li>Modify or terminate services</li>
+                            <li>Update pricing and features</li>
+                            <li>Limit access for policy violations</li>
+                        </ul>
+                        
+                        <h4 class="font-bold mb-2">User Responsibilities</h4>
+                        <p class="mb-3">Users must:</p>
+                        <ul class="list-disc pl-5 mb-3">
+                            <li>Provide accurate information</li>
+                            <li>Maintain account security</li>
+                            <li>Report any security concerns</li>
+                            <li>Comply with all applicable laws</li>
+                        </ul>
+                    </div>
+                `,
+                confirmButtonText: 'Close',
+                confirmButtonColor: '#019863',
+                width: '600px',
+                customClass: {
+                    container: 'terms-modal',
+                    popup: 'swal2-popup-custom',
+                    content: 'text-left'
+                }
+            });
+        });
+
+        // Contact Us Modal
+        $('#contactUs').click(function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Contact Us',
+                html: `
+                    <div class="text-center">
+                        <h3 class="font-bold mb-4">Get in Touch</h3>
+                        <div class="mb-6">
+                            <h4 class="font-bold mb-2">Phone Numbers</h4>
+                            <p class="mb-2">
+                                Customer Support:<br>
+                                <a href="tel:+15551234567" class="text-[#019863] hover:underline">+1 (555) 123-4567</a>
+                            </p>
+                            <p class="mb-4">
+                                Technical Support:<br>
+                                <a href="tel:+15559876543" class="text-[#019863] hover:underline">+1 (555) 987-6543</a>
+                            </p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="font-bold mb-2">Email</h4>
+                            <p>
+                                <a href="mailto:support@briefly.com" class="text-[#019863] hover:underline">support@briefly.com</a>
+                            </p>
+                        </div>
+                        
+                        <div class="text-sm text-gray-600">
+                            <p class="mb-2">Business Hours:</p>
+                            <p class="mb-1">Monday - Friday: 9:00 AM - 6:00 PM EST</p>
+                            <p>We typically respond within 24 hours</p>
+                        </div>
+                    </div>
+                `,
+                confirmButtonText: 'Close',
+                confirmButtonColor: '#019863',
+                width: '500px',
+                customClass: {
+                    container: 'contact-modal',
+                    popup: 'swal2-popup-custom'
+                }
+            });
+        });
+    });
+  </script>
+</body>
+</html>
