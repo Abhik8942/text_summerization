@@ -10,4 +10,5 @@ env/
 *.pyd
 
 # Optional: ignore ffmpeg binaries
-summarizer_project1/ffmpeg-7.1-full_build/
+ffmpeg-7.1-full_build/
+!summarizer_project1/**
