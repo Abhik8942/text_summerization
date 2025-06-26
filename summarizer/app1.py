@@ -19,7 +19,7 @@ EMAIL_PASSWORD = 'xlyc bfkd oizd topn'  # Use App Password for Gmail
 
 # Database and other previous configurations remain the same
 DRIVER_NAME = 'SQL SERVER'
-SERVER_NAME = r'abhik'
+SERVER_NAME = r'ABHIK\SQLEXPRESS'
 DATABASE_NAME = 'JJ'
 connection_string = f"""
 DRIVER={{SQL Server}};
